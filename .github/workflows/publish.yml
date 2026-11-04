@@ -1,0 +1,32 @@
+name: Release & Publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v3
+      with:
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Log in to DockerHub
+      run: |
+        echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_LOGIN }}" --password-stdin
+
+    - name: Build and Push Image
+      run: |
+        docker build ./ --file ./Dockerfile -t dmachard/lazy-docs:latest -t dmachard/lazy-docs:${{ github.ref_name }}
+        docker push dmachard/lazy-docs:latest
+        docker push dmachard/lazy-docs:${{ github.ref_name }}

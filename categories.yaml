@@ -1,0 +1,39 @@
+# ==============================================================================
+# LazyDocs — Document Classification Schema (Kev Decision Model)
+# ==============================================================================
+# Instructions sent to Kev Decision Model
+instructions: "What kind of official or personal document is this? / Quelle est la nature de ce document ?"
+
+# Categories and their semantic definitions.
+# Each entry defines the criteria used by Kev to assign incoming documents.
+criteria:
+  Factures: "Facture d'achat, de vente ou de prestation, justificatif de paiement, reçu, ticket de caisse, note d'honoraires, abonnement énergie eau électricité gaz téléphonie internet (invoice, bill, receipt, utility bill)"
+  Devis: "Devis commercial, estimation tarifaire préalable, bon de commande, proposition commerciale (quote, estimate, proforma)"
+  Banque: "Document bancaire : relevé de compte, RIB, IBAN, attestation bancaire, avis d'opéré ou de virement, contrat de prêt (bank statement, wire transfer)"
+  Bulletin de paie: "Bulletin de salaire ou fiche de paie mensuelle d'un salarié, net à payer (payslip, pay stub, salary slip)"
+  CV: "Document Curriculum Vitae d'un individu récapitulant son parcours, ses formations et compétences professionnelles (strictement le document CV d'un candidat)"
+  Travail: "Documents liés à l'emploi ou au chômage : contrat de travail, avenant, attestation employeur, pôle emploi, France Travail, certificat de travail (employment contract, certificate of employment)"
+  Impôts/Taxes: "Documents fiscaux : avis d'imposition sur le revenu, taxe foncière, taxe d'habitation, déclaration fiscale DGFiP (tax notice, tax return, IRS)"
+  Contrats: "Contrats commerciaux, conventions de service, contrats d'assurance responsabilité civile (hors bail immobilier et hors contrat de travail)"
+  Logement: "Documents relatifs à l'habitation : contrat de bail de location, quittance de loyer, résiliation de bail, état des lieux, titre de propriété notarié, charges de copropriété (lease agreement, rent receipt)"
+  Véhicule: "Documents automobiles et transports : carte grise, certificat d'immatriculation, contrôle technique, permis de conduire, certificat de cession, révision auto (vehicle registration, car inspection)"
+  Courriers/Administratif: "Courriers administratifs ou juridiques, amendes, contraventions routières, convocations, mises en demeure, réclamations (official notice, fine, penalty)"
+  Identité: "Titres officiels et justificatifs de citoyenneté : carte nationale d'identité, passeport, attestation de recensement ou de service national, certificat JAPD ou JDC, titre de séjour, justificatif de domicile régalien (identity card, passport, citizenship, proof of address)"
+  État civil: "Actes authentiques d'état civil : acte de naissance, livret de famille, certificat de mariage, acte de décès (birth certificate, marriage certificate)"
+  Médical: "Documents de santé : ordonnance médicale, feuille de soins, attestation de droits CPAM Ameli Sécurité sociale, remboursement mutuelle, résultats d'analyses (medical prescription, health record)"
+  Scolarité: "Parcours académique : diplôme officiel (baccalauréat, brevet, licence, master), relevé de notes scolaire, certificat de scolarité ou d'inscription (diploma, academic transcript, student certificate)"
+
+# ------------------------------------------------------------------------------
+# Household / Family Members (Optional Person Detection)
+# ------------------------------------------------------------------------------
+# List names of people in your household to automatically assign documents to them.
+# If candidates list is empty, person detection is skipped for maximum speed.
+# Example:
+#   candidates:
+#     - "John Doe"
+persons:
+  instructions: "Which person or family member is the primary subject or owner of this document? / Quelle personne est concernée ?"
+  candidates:
+    - "John Doe"
+    - "Jane Doe"
+    

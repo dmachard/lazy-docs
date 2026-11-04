@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LazyDocs — Je dépose, je retrouve</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='16' y='26' font-size='26' text-anchor='middle'>🦥</text></svg>">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="LazyDocs">
+    <link rel="apple-touch-icon" href="/icon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=15.0">
+</head>
+<body>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden"></div>
+
+    <!-- Drag & Drop Full Page Overlay -->
+    <div id="drag-overlay" class="drag-overlay hidden">
+        <div class="drag-overlay-inner">
+            <div class="drag-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </div>
+            <h2>Déposez vos fichiers ici</h2>
+            <p>PDF & Photos — indexation automatique</p>
+        </div>
+    </div>
+
+    <div class="shell">
+        <!-- Header -->
+        <header class="header">
+            <a href="/" class="header-brand">
+                <span class="brand-logo-icon">🦥</span>
+                <span>LazyDocs</span>
+            </a>
+            <div class="header-right">
+                <div id="status-indicator" class="status-indicator hidden">
+                    <span class="status-dot"></span>
+                    <span id="status-indicator-text">Analyse…</span>
+                </div>
+                <button id="btn-cancel-index" class="header-add-btn hidden" title="Stopper l'indexation en cours" style="color: var(--red);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+                </button>
+
+                <button id="btn-lang-toggle" class="header-add-btn lang-toggle-btn" title="Switch Language (EN / FR)">
+                    <span id="lang-flag">🇫🇷</span>
+                    <span id="lang-code">FR</span>
+                </button>
+                <button id="btn-reindex" class="header-add-btn" title="Reconstruire / Réindexer tout avec l'IA">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6"/><path d="M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+                </button>
+                <div class="add-menu-wrapper">
+                    <button class="header-add-btn" id="btn-add-toggle" title="Ajouter">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <div id="add-menu" class="add-menu hidden">
+                        <label for="file-input-header" class="add-menu-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                            PDF & Photos / Scans
+                        </label>
+                        <label for="camera-input-header" class="add-menu-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            Prendre en photo / Scanner
+                        </label>
+                        <label for="dir-input-header" class="add-menu-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                            Dossier entier
+                        </label>
+                    </div>
+                </div>
+                <input type="file" id="file-input-header" accept="application/pdf,image/png,image/jpeg,image/webp" multiple hidden>
+                <input type="file" id="camera-input-header" accept="image/*" capture="environment" hidden>
+                <input type="file" id="dir-input-header" webkitdirectory multiple hidden>
+            </div>
+        </header>
+
+        <!-- Search Hero -->
+        <section class="hero">
+            <div class="hero-glow"></div>
+            <h1 class="hero-title">Que cherchez-vous&nbsp;?</h1>
+            <div class="search-wrapper">
+                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input
+                    type="text"
+                    id="search-input"
+                    placeholder="EDF 2025, impôts, assurance voiture, 132 €…"
+                    autocomplete="off"
+                    spellcheck="false"
+                    autofocus
+                >
+                <button id="btn-clear-search" class="search-clear hidden" aria-label="Effacer">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <p id="search-stats" class="search-stats hidden"></p>
+        </section>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button id="tab-categories" class="tab-btn active">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+                <span>Par Type de document</span>
+            </button>
+            <button id="tab-recents" class="tab-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>Documents récents</span>
+            </button>
+        </nav>
+
+        <!-- Categories Section (Tiles view by default on Home) -->
+        <section id="categories-section" class="categories-section">
+            <div class="section-title-row">
+                <h2 class="results-title">Répartition par type de document</h2>
+                <span id="total-types-count" class="badge-count">0 types</span>
+            </div>
+            <div id="category-tiles-grid" class="category-tiles-grid"></div>
+        </section>
+
+        <!-- Documents Section -->
+        <section id="documents-section" class="results-section hidden">
+            <div class="results-header">
+                <div class="results-header-left">
+                    <input type="checkbox" id="select-all-checkbox" class="select-checkbox" title="Tout sélectionner">
+                    <h2 id="list-title" class="results-title">Documents récents</h2>
+                </div>
+                <div class="results-header-actions">
+                    <div class="view-toggle">
+                        <button id="btn-view-grid" class="view-btn active" title="Affichage en tuiles (cartes)">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                        </button>
+                        <button id="btn-view-list" class="view-btn" title="Affichage en liste">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                        </button>
+                    </div>
+                    <button id="btn-batch-delete" class="btn btn-danger btn-sm hidden">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                        Supprimer (<span id="selected-count">0</span>)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="empty-state hidden">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="empty-icon"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                <h3>Aucun document</h3>
+                <p>Déposez vos PDF ici ou cliquez sur <strong>+</strong> pour commencer.</p>
+            </div>
+
+            <!-- Document List / Grid -->
+            <div id="document-list" class="doc-grid"></div>
+
+            <!-- Pagination Controls -->
+            <div id="pagination-container" class="pagination-container hidden">
+                <button id="btn-prev-page" class="pagination-btn" disabled>&larr; Précédent</button>
+                <span id="pagination-info" class="pagination-info">Page 1 sur 1</span>
+                <button id="btn-next-page" class="pagination-btn" disabled>Suivant &rarr;</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Mobile FAB -->
+    <label for="fab-file-input" class="fab" title="Déposer un document">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </label>
+    <input type="file" id="fab-file-input" accept="application/pdf,image/png,image/jpeg,image/webp" multiple hidden>
+
+    <!-- Detail Modal -->
+    <div id="detail-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-panel">
+            <div class="modal-top">
+                <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+                    <h3 id="detail-filename" class="modal-title">Document</h3>
+                    <span id="detail-status" class="status-pill hidden">ready</span>
+                </div>
+                <button class="icon-btn modal-close" aria-label="Fermer">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-grid-2">
+                    <div class="field">
+                        <label class="field-label" for="detail-person">Personne concernée</label>
+                        <input type="text" id="detail-person" class="field-input" placeholder="Détectée par l'IA">
+                    </div>
+                    <div class="field">
+                        <label class="field-label" for="detail-org">Organisme / Émetteur</label>
+                        <input type="text" id="detail-org" class="field-input" placeholder="Détecté par l'IA">
+                    </div>
+                    <div class="field">
+                        <label class="field-label" for="detail-type">Type de document</label>
+                        <input type="text" id="detail-type" class="field-input" placeholder="Détecté par l'IA">
+                    </div>
+                    <div class="field">
+                        <label class="field-label" for="detail-date">Date</label>
+                        <input type="date" id="detail-date" class="field-input">
+                    </div>
+                </div>
+
+                <div class="field hidden" id="field-amount">
+                    <label class="field-label" for="detail-amount">Montant (€)</label>
+                    <input type="number" step="0.01" id="detail-amount" class="field-input" placeholder="0.00">
+                </div>
+
+                <div class="field">
+                    <label class="field-label">Tags</label>
+                    <div id="detail-tags-list" class="tags-row"></div>
+                    <div class="tag-add-row">
+                        <input type="text" id="tag-input" class="field-input" placeholder="Ajouter un tag…" autocomplete="off">
+                        <button id="btn-add-tag" class="small-btn">Ajouter</button>
+                    </div>
+                </div>
+
+                <div class="field hidden" id="field-raw-meta">
+                    <label class="field-label">Détails IA extraits</label>
+                    <div id="detail-raw-meta" class="raw-meta-grid"></div>
+                </div>
+
+                <details class="field-details">
+                    <summary class="field-label" style="cursor: pointer; padding: 6px 0; user-select: none;">📄 Voir le texte extrait (OCR)</summary>
+                    <textarea id="detail-text" class="field-textarea" readonly placeholder="Texte OCR…"></textarea>
+                </details>
+
+                <div class="modal-actions">
+                    <button id="btn-save-meta" class="btn btn-primary">Enregistrer</button>
+                    <button id="btn-reindex-doc" class="btn btn-secondary">⚡ Ré-analyser par IA</button>
+                    <button id="btn-modal-open-pdf" class="btn btn-ghost">Voir le fichier</button>
+                    <button id="btn-delete-doc" class="btn btn-danger-icon" title="Supprimer le document">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="app.js?v=16.0"></script>
+</body>
+</html>
