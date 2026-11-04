@@ -6,8 +6,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /
 
 RUN pip install --no-cache-dir "kev[serve] @ git+https://github.com/jaredpalmer/kev.git"
 
-COPY kev_server.py /app/kev_server.py
+ENV KEV_MODEL=jaredpalmer/kev-0.8b
+ENV PORT=8009
 
 EXPOSE 8009
 
-CMD ["python", "kev_server.py"]
+CMD ["sh", "-c", "python -m kev.serve --run ${KEV_MODEL} --host 0.0.0.0 --port ${PORT}"]
