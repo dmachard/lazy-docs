@@ -1,0 +1,33 @@
+services:
+  app:
+    image: dmachard/lazy-docs:latest
+    container_name: lazydocs_app
+    ports:
+      - "8085:8000"
+    environment:
+      - KEV_HOST=http://kev:8009
+      - KEV_MODEL=jaredpalmer/kev-0.8b
+      - WORKER_CONCURRENCY=2
+      - LLM_SNIPPET_MAX_CHARS=2500
+    volumes:
+      - ./categories.yaml:/app/categories.yaml:ro
+      - lazydocs_data:/app/data
+    depends_on:
+      - kev
+    restart: unless-stopped
+
+  kev:
+    image: dmachard/lazy-docs-kev:latest
+    container_name: lazydocs_kev
+    expose:
+      - "8009"
+    volumes:
+      - kev_cache:/root/.cache
+    restart: unless-stopped
+
+volumes:
+  lazydocs_data:
+    driver: local
+  kev_cache:
+    driver: local
+

@@ -25,8 +25,14 @@ jobs:
       run: |
         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_LOGIN }}" --password-stdin
 
-    - name: Build and Push Image
+    - name: Build and Push App Image
       run: |
         docker build ./ --file ./Dockerfile -t dmachard/lazy-docs:latest -t dmachard/lazy-docs:${{ github.ref_name }}
         docker push dmachard/lazy-docs:latest
         docker push dmachard/lazy-docs:${{ github.ref_name }}
+
+    - name: Build and Push Kev Image
+      run: |
+        docker build ./ --file ./Dockerfile.kev -t dmachard/lazy-docs-kev:latest -t dmachard/lazy-docs-kev:${{ github.ref_name }}
+        docker push dmachard/lazy-docs-kev:latest
+        docker push dmachard/lazy-docs-kev:${{ github.ref_name }}
