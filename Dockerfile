@@ -1,4 +1,4 @@
-FROM python:3.15-slim
+FROM python:3.12-slim
 
 # Install Tesseract OCR (French & English) and poppler-utils for pdf2image
 RUN apt-get update && apt-get install -y --no-install-recommends \
